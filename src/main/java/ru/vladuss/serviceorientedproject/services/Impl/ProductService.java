@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.repositories.IProductRepository;
+import ru.vladuss.serviceorientedproject.services.IProductService;
 
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ProductService{
+public class ProductService implements IProductService<String> {
 
     private IProductRepository productRepository;
 
@@ -20,7 +21,7 @@ public class ProductService{
         this.productRepository = productRepository;
     }
 
-
+    @Override
     public void addProduct(Product product) {
         Optional<Product> exsitingProduct = productRepository.findById(product.getUuid());
 
@@ -41,7 +42,7 @@ public class ProductService{
         productRepository.saveAndFlush(product);
     }
 
-
+    @Override
     public void deleteByUUID(UUID uuid) {
         Optional<Product> exsitingProduct = productRepository.findById(uuid);
         if (exsitingProduct.isPresent()) {
@@ -59,7 +60,7 @@ public class ProductService{
         }
     }
 
-
+    @Override
     public Product findByUUID(UUID uuid) {
         Optional<Product> existingProduct = productRepository.findById(uuid);
         if (existingProduct.isPresent()) {
@@ -70,12 +71,12 @@ public class ProductService{
         }
     }
 
-
+    @Override
     public List<Product> findAll() {
         return productRepository.findAll();
     }
 
-
+    @Override
     public void editProduct(Product updatingProduct) {
         if (updatingProduct.getUuid() != null) {
             Optional<Product> exisitngProduct = productRepository.findById(updatingProduct.getUuid());

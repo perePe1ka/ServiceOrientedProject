@@ -1,7 +1,6 @@
 package ru.vladuss.serviceorientedproject.services.Impl;
 
 import jakarta.transaction.Transactional;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import ru.vladuss.serviceorientedproject.entity.Order;
 import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.repositories.IOrderRepository;
 import ru.vladuss.serviceorientedproject.repositories.IProductRepository;
+import ru.vladuss.serviceorientedproject.services.IOrderService;
 
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class OrderService  {
+public class OrderService implements IOrderService<String> {
 
     private final IOrderRepository orderRepository;
     private final IProductRepository productRepository;
@@ -28,6 +28,7 @@ public class OrderService  {
         this.productRepository = productRepository;
     }
 
+    @Override
     @Transactional
     public void addOrder(Order order) {
         boolean isProductInStock = order.getProducts().stream()
@@ -57,22 +58,22 @@ public class OrderService  {
         }
     }
 
-
+    @Override
     public void deleteByUUID(UUID uuid) {
         orderRepository.deleteById(uuid);
     }
 
-
+    @Override
     public Optional<Order> findByUUID(UUID uuid) {
         return orderRepository.findById(uuid);
     }
 
-
+    @Override
     public List<Order> findAll() {
         return null;
     }
 
-
+    @Override
     @Scheduled(fixedDelay = 10000)
     @Transactional
     public void updateOrderStatus() {
@@ -109,6 +110,7 @@ public class OrderService  {
         }
     }
 
+    @Override
     @Transactional
     public void editOrder(Order order) {
         Optional<Order> existingOrder = orderRepository.findById(order.getUuid());
