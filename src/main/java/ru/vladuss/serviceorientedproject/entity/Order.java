@@ -2,6 +2,8 @@ package ru.vladuss.serviceorientedproject.entity;
 
 import javax.persistence.Entity;
 import jakarta.persistence.*;
+import ru.vladuss.serviceorientedproject.constants.Status;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -15,13 +17,17 @@ public class Order extends BaseEntity{
 
     private String customerAddress;
 
-    private String status;
+    private long orderCost;
 
-    public Order(LocalDateTime orderDate, String customerName, String customerAddress, String status) {
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    public Order(LocalDateTime orderDate, String customerName, String customerAddress, Status status, long orderCost) {
         this.orderDate = orderDate;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
         this.status = status;
+        this.orderCost = orderCost;
     }
 
     public Order() {
@@ -60,13 +66,21 @@ public class Order extends BaseEntity{
     public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
     }
-    @Column(name = "status")
-    public String getStatus() {
+    @Column(name = "status", nullable = false)
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
+    @Column(name = "order_cost", nullable = false)
+    public long getOrderCost() {
+        return orderCost;
+    }
+
+    public void setOrderCost(long orderCost) {
+        this.orderCost = orderCost;
+    }
 }

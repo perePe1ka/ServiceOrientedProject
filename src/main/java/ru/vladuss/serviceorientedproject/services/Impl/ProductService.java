@@ -61,7 +61,13 @@ public class ProductService{
 
 
     public Product findByUUID(UUID uuid) {
-        Optional<>
+        Optional<Product> existingProduct = productRepository.findById(uuid);
+        if (existingProduct.isPresent()) {
+            return existingProduct.get();
+        } else {
+            System.out.println("takzhe logi need");
+            return null;
+        }
     }
 
 
@@ -70,12 +76,31 @@ public class ProductService{
     }
 
 
-    public void editProduct(Product product) {
-        productRepository.
-    }
+    public void editProduct(Product updatingProduct) {
+        if (updatingProduct.getUuid() != null) {
+            Optional<Product> exisitngProduct = productRepository.findById(updatingProduct.getUuid());
+            if (exisitngProduct.isPresent()) {
+                Product existing = exisitngProduct.get();
 
+                existing.setName(updatingProduct.getName());
+                existing.setDescription(updatingProduct.getDescription());
+                existing.setPrice(updatingProduct.getPrice());
 
-    public Product getAll(Object product) {
-        return null;
+                if (!existing.getStockQuantity().equals(updatingProduct.getStockQuantity())) {
+                    if (existing.getStockQuantity() == 0 && updatingProduct.getStockQuantity() > 0) {
+                        existing.setInStock(true);
+                    }
+                    if (updatingProduct.getStockQuantity() == 0) {
+                        existing.setInStock(false);
+                    }
+                    existing.setStockQuantity(updatingProduct.getStockQuantity());
+                }
+                productRepository.saveAndFlush(existing);
+            } else {
+                System.out.println("logi");
+            }
+        } else {
+            System.out.println("logi");
+        }
     }
 }
