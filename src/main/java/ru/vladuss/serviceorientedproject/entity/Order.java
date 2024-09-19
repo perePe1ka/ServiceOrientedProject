@@ -1,6 +1,5 @@
 package ru.vladuss.serviceorientedproject.entity;
 
-import javax.persistence.Entity;
 import jakarta.persistence.*;
 import ru.vladuss.serviceorientedproject.constants.Status;
 
@@ -42,7 +41,7 @@ public class Order extends BaseEntity{
     public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
     }
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "orders", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.REMOVE)
     public Set<Product> getProducts() {
         return products;
     }

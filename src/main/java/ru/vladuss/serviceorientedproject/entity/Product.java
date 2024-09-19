@@ -1,11 +1,7 @@
 package ru.vladuss.serviceorientedproject.entity;
 
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import java.util.Set;
 
 @Entity
@@ -21,7 +17,7 @@ public class Product extends BaseEntity{
 
     private Boolean inStock;
 
-    private Set<Order> orders;
+    private Order orders;
 
     @Column(name = "name")
     public String getName() {
@@ -55,7 +51,7 @@ public class Product extends BaseEntity{
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
-
+    @Column(name = "in_stock")
     public Boolean getInStock() {
         return inStock;
     }
@@ -65,16 +61,16 @@ public class Product extends BaseEntity{
     }
 
     @ManyToOne
-    @JoinColumn(name = "order_uuid", referencedColumnName = "uuid", nullable = false)
-    public Set<Order>  getOrder() {
+    @JoinColumn(name = "orders_uuid", referencedColumnName = "uuid", nullable = false)
+    public Order getOrder() {
         return orders;
     }
 
-    public void setOrder(Set<Order>  orders) {
+    public void setOrder(Order orders) {
         this.orders = orders;
     }
 
-    public Product(String name, String description, Double price, Integer stockQuantity, Set<Order>  orders, Boolean inStock) {
+    public Product(String name, String description, Double price, Integer stockQuantity, Order orders, Boolean inStock) {
         this.name = name;
         this.description = description;
         this.price = price;
