@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "orders")
-public class Order extends BaseEntity{
+public class Orders extends BaseEntity{
     private LocalDateTime orderDate;
     private Set<Product> products;
 
@@ -21,7 +21,7 @@ public class Order extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Order(LocalDateTime orderDate, String customerName, String customerAddress, Status status, long orderCost) {
+    public Orders(LocalDateTime orderDate, String customerName, String customerAddress, Status status, long orderCost) {
         this.orderDate = orderDate;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
@@ -29,10 +29,10 @@ public class Order extends BaseEntity{
         this.orderCost = orderCost;
     }
 
-    public Order() {
+    public Orders() {
     }
 
-    @Column(name = "order_date")
+    @Column(name = "orders_date")
     public LocalDateTime getOrderDate() {
         return orderDate;
     }
@@ -74,7 +74,7 @@ public class Order extends BaseEntity{
         this.status = status;
     }
 
-    @Column(name = "order_cost", nullable = false)
+    @Column(name = "orders_cost", nullable = false)
     public long getOrderCost() {
         return orderCost;
     }

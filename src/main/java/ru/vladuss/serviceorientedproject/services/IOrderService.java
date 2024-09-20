@@ -1,7 +1,7 @@
 package ru.vladuss.serviceorientedproject.services;
 
 import org.springframework.stereotype.Service;
-import ru.vladuss.serviceorientedproject.entity.Order;
+import ru.vladuss.serviceorientedproject.entity.Orders;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,17 +9,17 @@ import java.util.UUID;
 
 @Service
 public interface IOrderService<String> {
-    void addOrder(Order order);
+    void addOrder(Orders orders);
 
     void deleteByUUID(UUID uuid);
 
-    Optional<Order> findByUUID(UUID uuid);
+    Optional<Orders> findByUUID(UUID uuid);
 
-    List<Order> findAll();
+    List<Orders> findAll();
 
 
     void updateOrderStatus();
 
 
-    void editOrder(Order order);
+    void editOrder(Orders orders);
 }

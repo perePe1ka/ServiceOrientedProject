@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.constants.Status;
-import ru.vladuss.serviceorientedproject.entity.Order;
+import ru.vladuss.serviceorientedproject.entity.Orders;
 import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.repositories.IOrderRepository;
 import ru.vladuss.serviceorientedproject.repositories.IProductRepository;
@@ -30,8 +30,8 @@ public class OrderService implements IOrderService<String> {
 
     @Override
     @Transactional
-    public void addOrder(Order order) {
-        boolean isProductInStock = order.getProducts().stream()
+    public void addOrder(Orders orders) {
+        boolean isProductInStock = orders.getProducts().stream()
                 .allMatch(product -> {
                     Product product1 = productRepository.findById(product.getUuid()).orElseThrow(() ->
                             new IllegalArgumentException("Не нашли продукт:" + product.getName()));
@@ -40,7 +40,7 @@ public class OrderService implements IOrderService<String> {
                 });
 
         if (isProductInStock) {
-            order.getProducts().forEach(product -> {
+            orders.getProducts().forEach(product -> {
                 Product product1 = productRepository.findById(product.getUuid()).get();
                 int newStock = product1.getStockQuantity() - 1;
                 product1.setStockQuantity(newStock);
@@ -51,8 +51,8 @@ public class OrderService implements IOrderService<String> {
                 productRepository.saveAndFlush(product1);
             });
 
-            order.setStatus(Status.ORDERED);
-            orderRepository.saveAndFlush(order);
+            orders.setStatus(Status.ORDERED);
+            orderRepository.saveAndFlush(orders);
         } else {
             System.out.println("logi");
         }
@@ -64,12 +64,12 @@ public class OrderService implements IOrderService<String> {
     }
 
     @Override
-    public Optional<Order> findByUUID(UUID uuid) {
+    public Optional<Orders> findByUUID(UUID uuid) {
         return orderRepository.findById(uuid);
     }
 
     @Override
-    public List<Order> findAll() {
+    public List<Orders> findAll() {
         return null;
     }
 
@@ -77,8 +77,8 @@ public class OrderService implements IOrderService<String> {
     @Scheduled(fixedDelay = 10000)
     @Transactional
     public void updateOrderStatus() {
-        List<Order> orders = orderRepository.findAll();
-        for (Order order : orders) {
+        List<Orders> orders = orderRepository.findAll();
+        for (Orders order : orders) {
             Status currStatus = order.getStatus();
             switch (currStatus) {
                 case ORDERED:
@@ -112,17 +112,17 @@ public class OrderService implements IOrderService<String> {
 
     @Override
     @Transactional
-    public void editOrder(Order order) {
-        Optional<Order> existingOrder = orderRepository.findById(order.getUuid());
+    public void editOrder(Orders orders) {
+        Optional<Orders> existingOrder = orderRepository.findById(orders.getUuid());
 
         if (existingOrder.isPresent()) {
-            Order currOrder = existingOrder.get();
-            currOrder.setCustomerName(order.getCustomerName());
-            currOrder.setCustomerAddress(order.getCustomerAddress());
-            currOrder.setOrderDate(order.getOrderDate());
-            currOrder.setOrderCost(order.getOrderCost());
+            Orders currOrders = existingOrder.get();
+            currOrders.setCustomerName(orders.getCustomerName());
+            currOrders.setCustomerAddress(orders.getCustomerAddress());
+            currOrders.setOrderDate(orders.getOrderDate());
+            currOrders.setOrderCost(orders.getOrderCost());
 
-            orderRepository.saveAndFlush(currOrder);
+            orderRepository.saveAndFlush(currOrders);
         } else {
             System.out.println("logi");
         }

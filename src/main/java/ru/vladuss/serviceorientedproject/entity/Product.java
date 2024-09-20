@@ -2,8 +2,6 @@ package ru.vladuss.serviceorientedproject.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
-
 @Entity
 @Table(name = "products")
 public class Product extends BaseEntity{
@@ -17,7 +15,7 @@ public class Product extends BaseEntity{
 
     private Boolean inStock;
 
-    private Order orders;
+    private Orders orders;
 
     @Column(name = "name")
     public String getName() {
@@ -61,16 +59,16 @@ public class Product extends BaseEntity{
     }
 
     @ManyToOne
-    @JoinColumn(name = "orders_uuid", referencedColumnName = "uuid", nullable = false)
-    public Order getOrder() {
+    @JoinColumn(name = "orders_uuid", referencedColumnName = "uuid")
+    public Orders getOrder() {
         return orders;
     }
 
-    public void setOrder(Order orders) {
+    public void setOrder(Orders orders) {
         this.orders = orders;
     }
 
-    public Product(String name, String description, Double price, Integer stockQuantity, Order orders, Boolean inStock) {
+    public Product(String name, String description, Double price, Integer stockQuantity, Orders orders, Boolean inStock) {
         this.name = name;
         this.description = description;
         this.price = price;

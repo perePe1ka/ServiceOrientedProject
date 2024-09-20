@@ -5,7 +5,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.vladuss.serviceorientedproject.entity.Order;
+import ru.vladuss.serviceorientedproject.entity.Orders;
 import ru.vladuss.serviceorientedproject.services.IOrderService;
 
 import java.util.List;
@@ -27,20 +27,20 @@ public class OrderController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<EntityModel<Order>> addOrder(@RequestBody Order order) {
-        orderService.addOrder(order);
-        EntityModel<Order> orderModel = EntityModel.of(order);
-        orderModel.add(linkTo(methodOn(OrderController.class).getOrder(order.getUuid())).withSelfRel());
+    public ResponseEntity<EntityModel<Orders>> addOrder(@RequestBody Orders orders) {
+        orderService.addOrder(orders);
+        EntityModel<Orders> orderModel = EntityModel.of(orders);
+        orderModel.add(linkTo(methodOn(OrderController.class).getOrder(orders.getUuid())).withSelfRel());
         return ResponseEntity.created(orderModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(orderModel);
     }
 
     @GetMapping("/{orderUUID}")
-    public ResponseEntity<EntityModel<Order>> getOrder(@PathVariable UUID orderUUID) {
-        Optional<Order> orderOpt = orderService.findByUUID(orderUUID);
+    public ResponseEntity<EntityModel<Orders>> getOrder(@PathVariable UUID orderUUID) {
+        Optional<Orders> orderOpt = orderService.findByUUID(orderUUID);
         if (orderOpt.isPresent()) {
-            Order order = orderOpt.get();
-            EntityModel<Order> orderModel = EntityModel.of(order);
-            addOrderLinks(orderModel, order);
+            Orders orders = orderOpt.get();
+            EntityModel<Orders> orderModel = EntityModel.of(orders);
+            addOrderLinks(orderModel, orders);
             return ResponseEntity.ok(orderModel);
         } else {
             return ResponseEntity.notFound().build();
@@ -48,10 +48,10 @@ public class OrderController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<EntityModel<Order>>> getAllOrders() {
-        List<Order> orders = orderService.findAll();
-        List<EntityModel<Order>> orderModels = orders.stream().map(order -> {
-            EntityModel<Order> orderModel = EntityModel.of(order);
+    public ResponseEntity<List<EntityModel<Orders>>> getAllOrders() {
+        List<Orders> orders = orderService.findAll();
+        List<EntityModel<Orders>> orderModels = orders.stream().map(order -> {
+            EntityModel<Orders> orderModel = EntityModel.of(order);
             addOrderLinks(orderModel, order);
             return orderModel;
         }).collect(Collectors.toList());
@@ -59,16 +59,16 @@ public class OrderController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<EntityModel<Order>> editOrder(@RequestBody Order order) {
-        orderService.editOrder(order);
-        EntityModel<Order> orderModel = EntityModel.of(order);
-        orderModel.add(linkTo(methodOn(OrderController.class).getOrder(order.getUuid())).withSelfRel());
+    public ResponseEntity<EntityModel<Orders>> editOrder(@RequestBody Orders orders) {
+        orderService.editOrder(orders);
+        EntityModel<Orders> orderModel = EntityModel.of(orders);
+        orderModel.add(linkTo(methodOn(OrderController.class).getOrder(orders.getUuid())).withSelfRel());
         return ResponseEntity.ok(orderModel);
     }
 
     @DeleteMapping("/delete/{orderUUID}")
     public ResponseEntity<Void> deleteOrder(@PathVariable UUID orderUUID) {
-        Optional<Order> orderOpt = orderService.findByUUID(orderUUID);
+        Optional<Orders> orderOpt = orderService.findByUUID(orderUUID);
         if (orderOpt.isPresent()) {
             orderService.deleteByUUID(orderUUID);
             return ResponseEntity.noContent().build();
@@ -77,9 +77,9 @@ public class OrderController {
         }
     }
 
-    private void addOrderLinks(EntityModel<Order> orderModel, Order order) {
-        orderModel.add(linkTo(methodOn(OrderController.class).getOrder(order.getUuid())).withSelfRel());
-        orderModel.add(linkTo(methodOn(OrderController.class).editOrder(order)).withRel("update"));
-        orderModel.add(linkTo(methodOn(OrderController.class).deleteOrder(order.getUuid())).withRel("delete"));
+    private void addOrderLinks(EntityModel<Orders> orderModel, Orders orders) {
+        orderModel.add(linkTo(methodOn(OrderController.class).getOrder(orders.getUuid())).withSelfRel());
+        orderModel.add(linkTo(methodOn(OrderController.class).editOrder(orders)).withRel("update"));
+        orderModel.add(linkTo(methodOn(OrderController.class).deleteOrder(orders.getUuid())).withRel("delete"));
     }
 }

@@ -6,7 +6,6 @@ import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.repositories.IProductRepository;
 import ru.vladuss.serviceorientedproject.services.IProductService;
 
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,23 +22,20 @@ public class ProductService implements IProductService<String> {
 
     @Override
     public void addProduct(Product product) {
-        Optional<Product> exsitingProduct = productRepository.findById(product.getUuid());
+        if (product.getUuid() != null && productRepository.existsById(product.getUuid())) {
+            Optional<Product> existingProduct = productRepository.findById(product.getUuid());
 
-        if (exsitingProduct.isPresent()) {
-            Product existing = exsitingProduct.get();
-
-            if (existing.getStockQuantity() == 0) {
-                existing.setInStock(true);
+            if (existingProduct.isPresent()) {
+                Product existing = existingProduct.get();
+                if (existing.getStockQuantity() == 0) {
+                    existing.setInStock(true);
+                }
+                existing.setStockQuantity(existing.getStockQuantity() + product.getStockQuantity());
+                productRepository.saveAndFlush(existing);
             }
-            existing.setStockQuantity(existing.getStockQuantity() + product.getStockQuantity());
-
-            productRepository.saveAndFlush(existing);
         } else {
             productRepository.saveAndFlush(product);
-            System.out.println("logi novogo Producta");
         }
-
-        productRepository.saveAndFlush(product);
     }
 
     @Override
