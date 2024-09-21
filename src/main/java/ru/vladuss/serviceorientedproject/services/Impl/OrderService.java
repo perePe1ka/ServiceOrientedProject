@@ -1,8 +1,6 @@
 package ru.vladuss.serviceorientedproject.services.Impl;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.constants.Status;
 import ru.vladuss.serviceorientedproject.entity.Orders;
@@ -10,7 +8,6 @@ import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.repositories.IOrderRepository;
 import ru.vladuss.serviceorientedproject.repositories.IProductRepository;
 import ru.vladuss.serviceorientedproject.services.IOrderService;
-
 
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +26,6 @@ public class OrderService implements IOrderService<String> {
     }
 
     @Override
-    @Transactional
     public void addOrder(Orders orders) {
         boolean isProductInStock = orders.getProducts().stream()
                 .allMatch(product -> {
@@ -74,8 +70,6 @@ public class OrderService implements IOrderService<String> {
     }
 
     @Override
-    @Scheduled(fixedDelay = 10000)
-    @Transactional
     public void updateOrderStatus() {
         List<Orders> orders = orderRepository.findAll();
         for (Orders order : orders) {
@@ -111,7 +105,6 @@ public class OrderService implements IOrderService<String> {
     }
 
     @Override
-    @Transactional
     public void editOrder(Orders orders) {
         Optional<Orders> existingOrder = orderRepository.findById(orders.getUuid());
 

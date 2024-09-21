@@ -1,7 +1,9 @@
 package ru.vladuss.serviceorientedproject.controllers;
 
+import org.aspectj.weaver.tools.UnsupportedPointcutPrimitiveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.vladuss.serviceorientedproject.entity.Product;
@@ -9,6 +11,7 @@ import ru.vladuss.serviceorientedproject.services.IProductService;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -43,8 +46,13 @@ public class ProductController {
         EntityModel<Product> productEntityModel = EntityModel.of(product);
 
         productEntityModel.add(linkTo(methodOn(ProductController.class).getProduct(productUUID)).withSelfRel());
-        productEntityModel.add(linkTo(methodOn(ProductController.class).getAllProducts()).withSelfRel());
-        productEntityModel.add(linkTo(methodOn(ProductController.class).deleteProduct(productUUID)).withSelfRel());
+
+
+        Link deleteLink = linkTo(methodOn(ProductController.class).deleteProduct(productUUID)).withRel("delete");
+        Link editLink = linkTo(methodOn(ProductController.class).editProduct(product)).withRel("edit");
+
+        productEntityModel.add(deleteLink);
+        productEntityModel.add(editLink);
 
         return ResponseEntity.ok(productEntityModel);
     }
@@ -78,11 +86,8 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{productUUID}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID productUUID) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID productUUID) {
         productService.deleteByUUID(productUUID);
-        EntityModel<Void> resource = EntityModel.of(null);
-        resource.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("all-products"));
-
-        return ResponseEntity.ok(resource);
+        return ResponseEntity.ok().build();
     }
 }
