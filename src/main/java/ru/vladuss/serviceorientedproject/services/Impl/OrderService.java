@@ -66,7 +66,7 @@ public class OrderService implements IOrderService<String> {
 
     @Override
     public List<Orders> findAll() {
-        return null;
+        return orderRepository.findAll();
     }
 
     @Override

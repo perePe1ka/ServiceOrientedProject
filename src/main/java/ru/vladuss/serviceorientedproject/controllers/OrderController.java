@@ -6,6 +6,7 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.vladuss.serviceorientedproject.entity.Orders;
+import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.services.IOrderService;
 
 import java.util.List;
@@ -57,6 +58,7 @@ public class OrderController {
         }).collect(Collectors.toList());
         return ResponseEntity.ok(orderModels);
     }
+
 
     @PatchMapping("/update")
     public ResponseEntity<EntityModel<Orders>> editOrder(@RequestBody Orders orders) {
