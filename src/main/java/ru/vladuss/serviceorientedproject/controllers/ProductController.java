@@ -1,6 +1,5 @@
 package ru.vladuss.serviceorientedproject.controllers;
 
-import org.aspectj.weaver.tools.UnsupportedPointcutPrimitiveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -11,8 +10,6 @@ import ru.vladuss.serviceorientedproject.services.IProductService;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -21,10 +18,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/products")
 public class ProductController {
-    private final IProductService productService;
+    private final IProductService<Product, UUID> productService;
 
     @Autowired
-    public ProductController(IProductService productService) {
+    public ProductController(IProductService<Product, UUID> productService) {
         this.productService = productService;
     }
 
@@ -66,7 +63,7 @@ public class ProductController {
                     resource.add(linkTo(methodOn(ProductController.class).getProduct(product.getUuid())).withSelfRel());
                     return resource;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         EntityModel<List<EntityModel<Product>>> resource = EntityModel.of(productResources);
         resource.add(linkTo(methodOn(ProductController.class).addProduct(new Product())).withRel("add-product"));

@@ -12,7 +12,7 @@ import java.util.UUID;
 public abstract class BaseEntity {
     protected UUID uuid;
 
-    public BaseEntity() {
+    protected BaseEntity() {
     }
 
     @Id

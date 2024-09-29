@@ -6,13 +6,11 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.vladuss.serviceorientedproject.entity.Orders;
-import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.services.IOrderService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -20,10 +18,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
-    private final IOrderService orderService;
+    private final IOrderService<Orders, UUID> orderService;
 
     @Autowired
-    public OrderController(IOrderService orderService) {
+    public OrderController(IOrderService<Orders, UUID> orderService) {
         this.orderService = orderService;
     }
 
@@ -55,7 +53,7 @@ public class OrderController {
             EntityModel<Orders> orderModel = EntityModel.of(order);
             addOrderLinks(orderModel, order);
             return orderModel;
-        }).collect(Collectors.toList());
+        }).toList();
         return ResponseEntity.ok(orderModels);
     }
 

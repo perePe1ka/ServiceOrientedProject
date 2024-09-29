@@ -1,0 +1,34 @@
+type Query {
+    getAllProducts: [Product]
+    getProduct(productUUID: String!): Product
+    deleteProduct(productUUID: String!): Product
+}
+
+type Product {
+    uuid: String
+    name: String
+    description: String
+    price: Float
+}
+
+type Orders {
+    uuid: String!
+    customerName: String!
+    customerAddress: String!
+    orderCost: Float!
+}
+
+input
+
+#type Mutation {
+#    addProduct(product: Product):
+#}
+#
+#input Product{
+#    name: String!
+#    description: String
+#    price: Float!
+#    stockQuantity: Int
+#    inStock: Boolean
+#    orders: Orders
+#}

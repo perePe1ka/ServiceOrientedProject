@@ -1,5 +1,7 @@
 package ru.vladuss.serviceorientedproject.services.Impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.constants.Status;
@@ -14,7 +16,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class OrderService implements IOrderService<String> {
+public class OrderService implements IOrderService<Orders, UUID> {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final IOrderRepository orderRepository;
     private final IProductRepository productRepository;
@@ -30,8 +34,7 @@ public class OrderService implements IOrderService<String> {
         boolean isProductInStock = orders.getProducts().stream()
                 .allMatch(product -> {
                     Product product1 = productRepository.findById(product.getUuid()).orElseThrow(() ->
-                            new IllegalArgumentException("Не нашли продукт:" + product.getName()));
-
+                            new IllegalArgumentException("Не нашли продукт: " + product.getName()));
                     return product1.getStockQuantity() >= 1;
                 });
 
@@ -49,23 +52,27 @@ public class OrderService implements IOrderService<String> {
 
             orders.setStatus(Status.ORDERED);
             orderRepository.saveAndFlush(orders);
+            logger.info("Заказ {} успешно создан со статусом ORDERED.", orders.getUuid());
         } else {
-            System.out.println("logi");
+            logger.warn("Попытка создания заказа не удалась: один или несколько товаров отсутствуют на складе.");
         }
     }
 
     @Override
     public void deleteByUUID(UUID uuid) {
         orderRepository.deleteById(uuid);
+        logger.info("Заказ с UUID {} был удалён.", uuid);
     }
 
     @Override
     public Optional<Orders> findByUUID(UUID uuid) {
+        logger.info("Поиск заказа по UUID: {}", uuid);
         return orderRepository.findById(uuid);
     }
 
     @Override
     public List<Orders> findAll() {
+        logger.info("Получение всех заказов.");
         return orderRepository.findAll();
     }
 
@@ -77,27 +84,34 @@ public class OrderService implements IOrderService<String> {
             switch (currStatus) {
                 case ORDERED:
                     order.setStatus(Status.CONFIRMED);
+                    logger.info("Статус заказа {} обновлён на CONFIRMED.", order.getUuid());
                     break;
                 case CONFIRMED:
                     order.setStatus(Status.ASSEMBLING);
+                    logger.info("Статус заказа {} обновлён на ASSEMBLING.", order.getUuid());
                     break;
                 case ASSEMBLING:
                     order.setStatus(Status.PACKED);
+                    logger.info("Статус заказа {} обновлён на PACKED.", order.getUuid());
                     break;
                 case PACKED:
                     order.setStatus(Status.SHIPPED);
+                    logger.info("Статус заказа {} обновлён на SHIPPED.", order.getUuid());
                     break;
                 case SHIPPED:
                     order.setStatus(Status.IN_TRANSIT);
+                    logger.info("Статус заказа {} обновлён на IN_TRANSIT.", order.getUuid());
                     break;
                 case IN_TRANSIT:
                     order.setStatus(Status.AWAITING_PICKUP);
+                    logger.info("Статус заказа {} обновлён на AWAITING_PICKUP.", order.getUuid());
                     break;
                 case AWAITING_PICKUP:
                     order.setStatus(Status.DELIVERED);
+                    logger.info("Статус заказа {} обновлён на DELIVERED.", order.getUuid());
                     break;
                 default:
-                    System.out.println("logi dostavlen ili otmena");
+                    logger.warn("Неизвестный статус для заказа {}: {}", order.getUuid(), currStatus);
                     break;
             }
             orderRepository.saveAndFlush(order);
@@ -116,8 +130,9 @@ public class OrderService implements IOrderService<String> {
             currOrders.setOrderCost(orders.getOrderCost());
 
             orderRepository.saveAndFlush(currOrders);
+            logger.info("Заказ {} был обновлён.", orders.getUuid());
         } else {
-            System.out.println("logi");
+            logger.warn("Заказ с UUID {} не найден, невозможно обновить.", orders.getUuid());
         }
     }
 }

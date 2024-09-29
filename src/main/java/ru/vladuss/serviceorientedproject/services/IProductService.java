@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public interface IProductService<String> {
+public interface IProductService<T, U> {
 
-    void addProduct(Product product);
+    void addProduct(T product);
 
-    void deleteByUUID(UUID uuid);
+    void deleteByUUID(U uuid);
 
-    Product findByUUID(UUID uuid);
+    Product findByUUID(U uuid);
 
     List<Product> findAll();
 
-    void editProduct(Product updatingProduct);
+    void editProduct(T updatingProduct);
 }

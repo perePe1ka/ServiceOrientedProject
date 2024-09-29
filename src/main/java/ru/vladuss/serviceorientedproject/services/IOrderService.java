@@ -8,12 +8,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public interface IOrderService<String> {
-    void addOrder(Orders orders);
+public interface IOrderService<T, U> {
+    void addOrder(T orders);
 
-    void deleteByUUID(UUID uuid);
+    void deleteByUUID(U uuid);
 
-    Optional<Orders> findByUUID(UUID uuid);
+    Optional<Orders> findByUUID(U uuid);
 
     List<Orders> findAll();
 
@@ -21,5 +21,5 @@ public interface IOrderService<String> {
     void updateOrderStatus();
 
 
-    void editOrder(Orders orders);
+    void editOrder(T orders);
 }
