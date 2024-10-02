@@ -1,24 +1,95 @@
 type Query {
-    getAllProducts: [Product]
-    getProduct(productUUID: String!): Product
-    deleteProduct(productUUID: String!): Product
+    getAllProducts: [ProductType]
+    getProduct(productUUID: String!): ProductType
+
+    getAllOrders: [OrderType]
+    getOrder(orderUUID: String!): OrderType
 }
 
-type Product {
+type Mutation {
+    addProduct(product: ProductInput): ProductType
+    deleteProduct(productUUID: String!): ProductType
+    editProduct(product: ProductEdit): ProductType
+
+    addOrder(orders: OrderInput): OrderType
+    deleteOrder(orderUUID: String!): OrderType
+    editOrder(orders: OrderEdit): OrderType
+}
+
+type ProductType {
     uuid: String
     name: String
     description: String
+    stockQuantity: Int
     price: Float
 }
 
-type Orders {
+type OrderType {
     uuid: String!
     customerName: String!
     customerAddress: String!
     orderCost: Float!
 }
 
-input
+input ProductInput {
+    name: String
+    description: String
+    price: Float
+    stockQuantity: Int
+    inStock: Boolean
+    orders: OrderInput
+}
+
+input ProductForOrder {
+    uuid: String!
+    name: String
+}
+
+input OrderInput {
+    orderDate: DateTime
+    products: ProductForOrder
+    customerName: String
+    customerAddress: String
+    orderCost: Float
+    status: Status
+}
+
+input ProductEdit {
+    uuid: String
+    name: String
+    description: String
+    price: Float
+    stockQuantity: Int
+    inStock: Boolean
+}
+
+input OrderEdit {
+    uuid: String
+    orderDate: DateTime
+    products: ProductForOrder
+    customerName: String
+    customerAddress: String
+    orderCost: Float
+    status: Status
+}
+
+
+
+
+scalar DateTime
+
+enum Status{
+    ORDERED
+    CONFIRMED
+    ASSEMBLING
+    PACKED
+    SHIPPED
+    IN_TRANSIT
+    AWAITING_PICKUP
+    DELIVERED
+    CANCELED
+    RETURNED
+}
 
 #type Mutation {
 #    addProduct(product: Product):

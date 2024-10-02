@@ -57,7 +57,7 @@ public class ProductService implements IProductService<Product, UUID> {
                 product.setInStock(false);
             }
             productRepository.saveAndFlush(product);
-            logger.info("Количество товара {} уменьшено. Текущее количество: {}", product.getUuid(), product.getStockQuantity());
+            logger.info("Количество товара {}, {} уменьшено. Текущее количество: {}", product.getUuid(), product.getName(), product.getStockQuantity());
         } else {
             logger.warn("Товар с UUID {} не найден, удаление невозможно.", uuid);
         }

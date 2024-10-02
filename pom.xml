@@ -85,6 +85,7 @@
             <artifactId>spring-webflux</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.netflix.graphql.dgs</groupId>
             <artifactId>graphql-dgs-spring-boot-starter</artifactId>
