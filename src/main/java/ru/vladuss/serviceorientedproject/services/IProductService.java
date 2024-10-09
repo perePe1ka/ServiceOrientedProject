@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.entity.Product;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public interface IProductService<T, U> {

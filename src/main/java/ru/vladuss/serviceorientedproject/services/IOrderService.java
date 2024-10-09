@@ -5,7 +5,6 @@ import ru.vladuss.serviceorientedproject.entity.Orders;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public interface IOrderService<T, U> {

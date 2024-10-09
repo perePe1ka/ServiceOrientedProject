@@ -10,9 +10,6 @@ public class ActionModel extends RepresentationModel<ActionModel> {
         this.actionName = actionName;
         this.description = description;
     }
-
-    // Геттеры и сеттеры
-
     public String getActionName() {
         return actionName;
     }

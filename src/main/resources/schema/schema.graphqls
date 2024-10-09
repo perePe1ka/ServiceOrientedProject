@@ -73,9 +73,6 @@ input OrderEdit {
     status: Status
 }
 
-
-
-
 scalar DateTime
 
 enum Status{
