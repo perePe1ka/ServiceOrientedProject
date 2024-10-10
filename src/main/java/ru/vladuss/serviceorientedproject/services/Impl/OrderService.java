@@ -66,9 +66,16 @@ public class OrderService implements IOrderService<Orders, UUID> {
 
     @Override
     public Optional<Orders> findByUUID(UUID uuid) {
-        logger.info("Поиск заказа по UUID: {}", uuid);
-        return orderRepository.findById(uuid);
+        Optional<Orders> existingOrders = orderRepository.findById(uuid);
+        if (existingOrders.isPresent()) {
+            logger.info("Заказ {} найден.", uuid);
+            return Optional.of(existingOrders.get());
+        } else {
+            logger.warn("Заказ с UUID {} не найден.", uuid);
+            return null;
+        }
     }
+
 
     @Override
     public List<Orders> findAll() {
