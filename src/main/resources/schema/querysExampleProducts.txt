@@ -1,0 +1,45 @@
+#Products
+# query {
+#     getAllProducts {
+#       uuid
+#       name
+#       description
+#       price
+#     }
+# }
+# query {
+#   getProduct(productUUID: "20f52548-cf43-479b-b484-c78fc25b2094") {
+#     uuid
+#     name
+#     description
+#     price
+#   }
+# }
+# mutation {
+#   editProduct(product: {uuid: "20f52548-cf43-479b-b484-c78fc25b2094", name:"newName", description: "newD", stockQuantity: 13, price: 1093}) {
+#     uuid
+#     name
+#     description
+#     stockQuantity
+#     price
+#   }
+# 	addProduct(product: { name: "Laptop", description: "Highlaptop", price: 1500, stockQuantity: 10, inStock:true }) {
+# 	name
+# 	description
+# 	stockQuantity
+# 	price
+# 	description
+# 	}
+# }
+# mutation {
+#     deleteProduct(productUUID: "20f52548-cf43-479b-b484-c78fc25b2094") {
+#         uuid
+#         name
+#         description
+#         stockQuantity
+#         price
+#     }
+# }
+
+
+

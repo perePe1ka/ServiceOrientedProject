@@ -1,0 +1,40 @@
+#Products
+# query {
+#     getAllOrders {
+#      uuid
+#       customerName
+#       customerAddress
+#       orderCost
+#     }
+# }
+# query {
+#   getOrder(orderUUID: "c14346ba-8bb4-4d11-9b37-585a54d8650b") {
+#       uuid
+#       customerName
+#       customerAddress
+#       orderCost
+#   }
+# }
+# mutation {
+  # 	editOrder(orders: {uuid: "c14346ba-8bb4-4d11-9b37-585a54d8650b", orderDate:"2024-10-02T15:30:00", products: {uuid: "6a45ca3b-9518-4de2-a8da-9c79ec14cb86" ,name: "High-performance laptop"}, customerName: "Ivanchik", customerAddress: "Pushkin Street", orderCost: 124, status: ORDERED}) {
+  #   	uuid
+  #     customerName
+  #     customerAddress
+  #     orderCost
+  # }
+	# 	addOrder(orders: {orderDate:"2024-10-02T15:30:00", products: {uuid: "b29056b8-e43e-441a-92c1-f5f2446fef38" ,name: "High-performance laptop"}, customerName: "Ivanchik", customerAddress: "Pushkin Street", orderCost: 124, status: ORDERED }) {
+	# 		uuid
+	# customerName
+	# customerAddress
+	# orderCost
+	# }
+#   	deleteOrder(orderUUID: "f0221d73-2d80-42fa-874d-4dda30f7ce93") {
+#  			uuid
+#     	customerName
+#     	customerAddress
+#     	orderCost
+# }
+# }
+
+
+
