@@ -65,7 +65,7 @@ public class Orders extends BaseEntity{
     public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
     }
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     public Status getStatus() {
         return status;
     }

@@ -3,5 +3,5 @@ POST http://localhost:8081/send/message
 Content-Type: application/json
 
 {
-  "message": "Hello, World!"
+  "message": "Hello, sfsdfsdfsdmfklsdm"
 }

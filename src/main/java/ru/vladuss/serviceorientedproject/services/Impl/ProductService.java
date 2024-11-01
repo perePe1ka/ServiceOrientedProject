@@ -19,9 +19,12 @@ public class ProductService implements IProductService<Product, UUID> {
 
     private final IProductRepository productRepository;
 
+    private final SenderService service;
+
     @Autowired
-    public ProductService(IProductRepository productRepository) {
+    public ProductService(IProductRepository productRepository, SenderService service) {
         this.productRepository = productRepository;
+        this.service = service;
     }
 
     @Override
@@ -38,6 +41,7 @@ public class ProductService implements IProductService<Product, UUID> {
                 productRepository.saveAndFlush(existing);
                 logger.info("Товар {} обновлён, добавлено количество на складе.", existing.getUuid());
             }
+            service.sendProduct(product.getUuid().toString(), product.getStockQuantity(), product.getInStock());
         } else {
             productRepository.saveAndFlush(product);
             logger.info("Новый товар {} добавлен.", product.getUuid());
@@ -58,6 +62,8 @@ public class ProductService implements IProductService<Product, UUID> {
             }
             productRepository.saveAndFlush(product);
             logger.info("Количество товара {}, {} уменьшено. Текущее количество: {}", product.getUuid(), product.getName(), product.getStockQuantity());
+
+            service.sendProduct(product.getUuid().toString(), product.getStockQuantity(), product.getInStock());
         } else {
             logger.warn("Товар с UUID {} не найден, удаление невозможно.", uuid);
         }
@@ -97,6 +103,8 @@ public class ProductService implements IProductService<Product, UUID> {
         Product existing = existingProduct.get();
         updateProductDetails(existing, updatingProduct);
         updateProductStock(existing, updatingProduct);
+
+        service.sendProduct(updatingProduct.getUuid().toString(), updatingProduct.getStockQuantity(), updatingProduct.getInStock());
 
         productRepository.saveAndFlush(existing);
         logger.info("Товар {} обновлён.", existing.getUuid());

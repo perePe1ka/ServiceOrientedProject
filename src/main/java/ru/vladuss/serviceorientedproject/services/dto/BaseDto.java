@@ -6,13 +6,21 @@ import java.util.UUID;
 
 @MappedSuperclass
 public abstract class BaseDto {
-    private UUID uuid;
+    private String uuid;
 
-    public UUID getUuid() {
+    public BaseDto() {
+    }
+
+    public BaseDto(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 }
+

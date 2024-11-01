@@ -1,0 +1,27 @@
+# Получить все товары
+POST http://localhost:8080/graphql
+Content-Type: application/json
+
+{
+  "query": "query { getAllProducts { uuid name description price } }"
+}
+
+###
+
+# Добавить новый товар
+POST http://localhost:8080/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation { addProduct(product: { name: \"Test Product\", description: \"Highlaptop\", price: 1500, stockQuantity: 10, inStock:true }) {name description stockQuantity price description} }"
+}
+
+###
+
+# Удалить товар по UUID (уменьшает stockQuantity на 1)
+POST http://localhost:8080/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation { deleteProduct(productUUID: \"f033e3e5-1de3-468d-97ec-cf9652717a76\") {uuid name description stockQuantity price} }"
+}
