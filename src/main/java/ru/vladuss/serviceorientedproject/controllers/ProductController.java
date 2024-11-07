@@ -3,8 +3,10 @@ package ru.vladuss.serviceorientedproject.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.model.ProductActionModel;
 import ru.vladuss.serviceorientedproject.services.IProductService;
@@ -27,12 +29,18 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) throws NotFoundUuidException {
-        productService.addProduct(product);
+    @PostMapping("/create")
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) throws NotFoundUuidException {
+        productService.createProduct(product);
         EntityModel<Product> productEntityModel = EntityModel.of(product);
         productEntityModel.add(linkTo(methodOn(ProductController.class).getProduct(product.getUuid())).withSelfRel());
         return ResponseEntity.ok().body(product);
+    }
+
+    @PatchMapping("/add/{productUuid}")
+    public ResponseEntity<String> addProduct(@PathVariable UUID productUuid, @RequestParam int quantity) {
+        productService.addProduct(productUuid, quantity);
+        return ResponseEntity.ok("Количество товара увеличено на " + quantity);
     }
 
     @GetMapping("/{productUUID}")
@@ -48,7 +56,7 @@ public class ProductController {
         productActionModel.add(linkTo(methodOn(ProductController.class).getProduct(productUUID)).withSelfRel());
         productActionModel.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("get-all"));
         productActionModel.add(linkTo(methodOn(ProductController.class).deleteProduct(productUUID)).withRel("delete"));
-        productActionModel.add(linkTo(methodOn(ProductController.class).addProduct(product)).withRel("add-product"));
+        productActionModel.add(linkTo(methodOn(ProductController.class).createProduct(product)).withRel("add-product"));
         productActionModel.add(linkTo(methodOn(ProductController.class).editProduct(product)).withRel("edit-product"));
 
         productActionModel.addProduct("update", "PUT", linkTo(methodOn(ProductController.class).editProduct(product)));
@@ -67,7 +75,7 @@ public class ProductController {
 
                         productModel.add(linkTo(methodOn(ProductController.class).getAllProducts()).withSelfRel());
                         productModel.add(linkTo(methodOn(ProductController.class).getProduct(product.getUuid())).withRel("get-one"));
-                        productModel.add(linkTo(methodOn(ProductController.class).addProduct(product)).withRel("add-product"));
+                        productModel.add(linkTo(methodOn(ProductController.class).createProduct(product)).withRel("add-product"));
                         productModel.add(linkTo(methodOn(ProductController.class).editProduct(product)).withRel("edit-product"));
                         productModel.add(linkTo(methodOn(ProductController.class).deleteProduct(product.getUuid())).withRel("delete-product"));
 

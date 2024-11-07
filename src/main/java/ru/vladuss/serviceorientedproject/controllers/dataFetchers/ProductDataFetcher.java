@@ -36,8 +36,8 @@ public class ProductDataFetcher {
     }
 
     @DgsMutation
-    public Product addProduct(@InputArgument Product product) {
-        productService.addProduct(product);
+    public Product createProduct(@InputArgument Product product) {
+        productService.createProduct(product);
         return product;
     }
 

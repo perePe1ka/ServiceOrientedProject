@@ -1,0 +1,26 @@
+DELETE http://localhost:8080/api/products/delete/f033e3e5-1de3-468d-97ec-cf9652717a76
+
+
+###
+
+POST http://localhost:8080/api/products/add
+Content-Type: application/json
+
+{
+  "name": "Новый продукт",
+  "description": "Описание нового продукта",
+  "price": 100.0,
+  "stockQuantity": 10,
+  "inStock": true
+}
+
+###
+
+PUT http://localhost:8080/api/products/update
+Content-Type: application/json
+
+{
+  "uuid": "4eaba4bf-a4a0-42fa-9537-0eaa7d6fe1e8",
+  "stockQuantity": 5,
+  "inStock": true
+}

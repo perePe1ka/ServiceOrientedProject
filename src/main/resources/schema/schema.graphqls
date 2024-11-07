@@ -7,7 +7,7 @@ type Query {
 }
 
 type Mutation {
-    addProduct(product: ProductInput): ProductType
+    createProduct(product: ProductInput): ProductType
     deleteProduct(productUUID: String!): ProductType
     editProduct(product: ProductEdit): ProductType
 

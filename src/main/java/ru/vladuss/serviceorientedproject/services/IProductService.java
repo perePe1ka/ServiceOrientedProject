@@ -4,11 +4,14 @@ import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.entity.Product;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public interface IProductService<T, U> {
 
-    void addProduct(T product);
+    void createProduct(T product);
+
+    void addProduct(UUID productUuid, int quantity);
 
     void deleteByUUID(U uuid);
 
