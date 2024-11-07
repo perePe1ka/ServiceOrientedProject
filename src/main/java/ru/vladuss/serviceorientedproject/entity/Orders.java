@@ -3,6 +3,7 @@ package ru.vladuss.serviceorientedproject.entity;
 import jakarta.persistence.*;
 import ru.vladuss.serviceorientedproject.constants.Status;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -18,18 +19,30 @@ public class Orders extends BaseEntity{
 
     private long orderCost;
 
+    private Instant timeOfSwapStatus;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public Orders(LocalDateTime orderDate, String customerName, String customerAddress, Status status, long orderCost) {
+    public Orders(LocalDateTime orderDate, String customerName, String customerAddress, Status status, long orderCost, Instant timeOfSwapStatus) {
         this.orderDate = orderDate;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
         this.status = status;
         this.orderCost = orderCost;
+        this.timeOfSwapStatus = timeOfSwapStatus;
     }
 
     public Orders() {
+    }
+
+    @Column(name = "time_of_swap_status")
+    public Instant getTimeOfSwapStatus() {
+        return timeOfSwapStatus;
+    }
+
+    public void setTimeOfSwapStatus(Instant timeOfSwapStatus) {
+        this.timeOfSwapStatus = timeOfSwapStatus;
     }
 
     @Column(name = "orders_date")

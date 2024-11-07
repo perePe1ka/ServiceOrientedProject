@@ -19,16 +19,16 @@ public class ProductService implements IProductService<Product, UUID> {
 
     private final IProductRepository productRepository;
 
-    private final SenderService service;
+    private final SenderService senderService;
 
     @Autowired
-    public ProductService(IProductRepository productRepository, SenderService service) {
+    public ProductService(IProductRepository productRepository, SenderService senderService) {
         this.productRepository = productRepository;
-        this.service = service;
+        this.senderService = senderService;
     }
 
     @Override
-    public void addProduct(Product product) {
+    public void createProduct(Product product) {
         if (product.getUuid() != null && productRepository.existsById(product.getUuid())) {
             Optional<Product> existingProduct = productRepository.findById(product.getUuid());
 
@@ -41,10 +41,32 @@ public class ProductService implements IProductService<Product, UUID> {
                 productRepository.saveAndFlush(existing);
                 logger.info("Товар {} обновлён, добавлено количество на складе.", existing.getUuid());
             }
-            service.sendProduct(product.getUuid().toString(), product.getStockQuantity(), product.getInStock());
         } else {
             productRepository.saveAndFlush(product);
             logger.info("Новый товар {} добавлен.", product.getUuid());
+        }
+    }
+
+    @Override
+    public void addProduct(UUID productUuid, int quantity) {
+        Optional<Product> existingProduct = productRepository.findById(productUuid);
+
+        if (existingProduct.isPresent()) {
+            Product product = existingProduct.get();
+            product.setStockQuantity(product.getStockQuantity() + quantity);
+
+            if (!product.getInStock() && product.getStockQuantity() > 0) {
+                product.setInStock(true);
+                senderService.sendNotification(product.getUuid().toString());
+            }
+
+            productRepository.saveAndFlush(product);
+            logger.info("Количество товара {}, {} увеличено на {}. Текущее количество: {}",
+                    product.getUuid(), product.getName(), quantity, product.getStockQuantity());
+
+            senderService.sendInventoryUpdate(product.getUuid().toString(), product.getStockQuantity(), product.getInStock());
+        } else {
+            logger.warn("Товар с UUID {} не найден, добавление невозможно.", productUuid);
         }
     }
 
@@ -59,11 +81,10 @@ public class ProductService implements IProductService<Product, UUID> {
             } else if (product.getStockQuantity() == 1) {
                 product.setStockQuantity(0);
                 product.setInStock(false);
+                senderService.sendInventoryUpdate(product.getUuid().toString(), product.getStockQuantity(), product.getInStock());
             }
             productRepository.saveAndFlush(product);
             logger.info("Количество товара {}, {} уменьшено. Текущее количество: {}", product.getUuid(), product.getName(), product.getStockQuantity());
-
-            service.sendProduct(product.getUuid().toString(), product.getStockQuantity(), product.getInStock());
         } else {
             logger.warn("Товар с UUID {} не найден, удаление невозможно.", uuid);
         }
@@ -104,8 +125,6 @@ public class ProductService implements IProductService<Product, UUID> {
         updateProductDetails(existing, updatingProduct);
         updateProductStock(existing, updatingProduct);
 
-        service.sendProduct(updatingProduct.getUuid().toString(), updatingProduct.getStockQuantity(), updatingProduct.getInStock());
-
         productRepository.saveAndFlush(existing);
         logger.info("Товар {} обновлён.", existing.getUuid());
     }
@@ -120,10 +139,15 @@ public class ProductService implements IProductService<Product, UUID> {
         if (!existing.getStockQuantity().equals(updatingProduct.getStockQuantity())) {
             if (existing.getStockQuantity() == 0 && updatingProduct.getStockQuantity() > 0) {
                 existing.setInStock(true);
+                senderService.sendNotification(existing.getUuid().toString());
             } else if (updatingProduct.getStockQuantity() == 0) {
                 existing.setInStock(false);
             }
             existing.setStockQuantity(updatingProduct.getStockQuantity());
+
+            if (!existing.getInStock()) {
+                senderService.sendInventoryUpdate(existing.getUuid().toString(), existing.getStockQuantity(), existing.getInStock());
+            }
         }
     }
 

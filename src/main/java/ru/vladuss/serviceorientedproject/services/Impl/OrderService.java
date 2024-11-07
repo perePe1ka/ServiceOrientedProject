@@ -3,6 +3,7 @@ package ru.vladuss.serviceorientedproject.services.Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.vladuss.serviceorientedproject.constants.Status;
 import ru.vladuss.serviceorientedproject.entity.Orders;
@@ -10,10 +11,14 @@ import ru.vladuss.serviceorientedproject.entity.Product;
 import ru.vladuss.serviceorientedproject.repositories.IOrderRepository;
 import ru.vladuss.serviceorientedproject.repositories.IProductRepository;
 import ru.vladuss.serviceorientedproject.services.IOrderService;
+import ru.vladuss.serviceorientedproject.services.dto.OrdersStatusUpdateDto;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService implements IOrderService<Orders, UUID> {
@@ -23,10 +28,13 @@ public class OrderService implements IOrderService<Orders, UUID> {
     private final IOrderRepository orderRepository;
     private final IProductRepository productRepository;
 
+    private final SenderService senderService;
+
     @Autowired
-    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository) {
+    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, SenderService senderService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.senderService = senderService;
     }
 
     @Override
@@ -50,7 +58,7 @@ public class OrderService implements IOrderService<Orders, UUID> {
                 productRepository.saveAndFlush(product1);
             });
 
-            orders.setStatus(Status.ORDERED);
+            orders.setStatus(Status.NO_STATUS);
             orderRepository.saveAndFlush(orders);
             logger.info("Заказ {} успешно создан со статусом ORDERED.", orders.getUuid());
         } else {
@@ -86,42 +94,47 @@ public class OrderService implements IOrderService<Orders, UUID> {
     @Override
     public void updateOrderStatus() {
         List<Orders> orders = orderRepository.findAll();
+        Random random = new Random();
         for (Orders order : orders) {
             Status currStatus = order.getStatus();
-            switch (currStatus) {
-                case ORDERED:
-                    order.setStatus(Status.CONFIRMED);
-                    logger.info("Статус заказа {} обновлён на CONFIRMED.", order.getUuid());
-                    break;
-                case CONFIRMED:
-                    order.setStatus(Status.ASSEMBLING);
-                    logger.info("Статус заказа {} обновлён на ASSEMBLING.", order.getUuid());
-                    break;
-                case ASSEMBLING:
-                    order.setStatus(Status.PACKED);
-                    logger.info("Статус заказа {} обновлён на PACKED.", order.getUuid());
-                    break;
-                case PACKED:
-                    order.setStatus(Status.SHIPPED);
-                    logger.info("Статус заказа {} обновлён на SHIPPED.", order.getUuid());
-                    break;
-                case SHIPPED:
-                    order.setStatus(Status.IN_TRANSIT);
-                    logger.info("Статус заказа {} обновлён на IN_TRANSIT.", order.getUuid());
-                    break;
-                case IN_TRANSIT:
-                    order.setStatus(Status.AWAITING_PICKUP);
-                    logger.info("Статус заказа {} обновлён на AWAITING_PICKUP.", order.getUuid());
-                    break;
-                case AWAITING_PICKUP:
-                    order.setStatus(Status.DELIVERED);
-                    logger.info("Статус заказа {} обновлён на DELIVERED.", order.getUuid());
-                    break;
-                default:
-                    logger.warn("Неизвестный статус для заказа {}: {}", order.getUuid(), currStatus);
-                    break;
+            if (currStatus == Status.DELIVERED) {
+                break;
             }
-            orderRepository.saveAndFlush(order);
+            Status nextStatus = getNextStatus(currStatus);
+            if (nextStatus != null) {
+                int delay = random.nextInt(25) + 5;
+                order.setStatus(nextStatus);
+                order.setTimeOfSwapStatus(Instant.now());
+                orderRepository.saveAndFlush(order);
+
+                logger.info("Статус заказа {} обновлён на {} с задержкой {} секунд.", order.getUuid(), nextStatus, delay);
+
+                OrdersStatusUpdateDto updateDto = new OrdersStatusUpdateDto(
+                        order.getUuid(),
+                        nextStatus.name(),
+                        delay,
+                        order.getOrderCost(),
+                        order.getProducts().stream().map(Product::getName).collect(Collectors.toSet())
+                );
+                senderService.sendUpdateOfOrderStatus(updateDto);
+            } else {
+                logger.warn("Неизвестный статус для заказа {}: {}", order.getUuid(), currStatus);
+            }
+        }
+    }
+
+    private Status getNextStatus(Status currentStatus) {
+        switch (currentStatus) {
+            case NO_STATUS: return Status.ORDERED;
+            case ORDERED: return Status.CONFIRMED;
+//            case CONFIRMED: return Status.ASSEMBLING;
+//            case ASSEMBLING: return Status.PACKED;
+//            case PACKED: return Status.SHIPPED;
+//            case SHIPPED: return Status.IN_TRANSIT;
+//            case IN_TRANSIT: return Status.AWAITING_PICKUP;
+            case CONFIRMED: return Status.AWAITING_PICKUP;
+            case AWAITING_PICKUP: return Status.DELIVERED;
+            default: return null;
         }
     }
 
@@ -141,5 +154,10 @@ public class OrderService implements IOrderService<Orders, UUID> {
         } else {
             logger.warn("Заказ с UUID {} не найден, невозможно обновить.", orders.getUuid());
         }
+    }
+
+    @Scheduled(fixedDelay = 3000)
+    public void scheduleUpdateOrderStatus() {
+        updateOrderStatus();
     }
 }

@@ -11,7 +11,9 @@ public enum Status {
     AWAITING_PICKUP(6),
     DELIVERED(7),
     CANCELED(8),
-    RETURNED(9);
+    RETURNED(9),
+
+    NO_STATUS(10);
 
     private final int code;
 

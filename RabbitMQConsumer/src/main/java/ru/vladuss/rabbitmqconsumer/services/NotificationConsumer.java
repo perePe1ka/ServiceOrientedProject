@@ -6,12 +6,12 @@
 //import org.slf4j.LoggerFactory;
 //
 //@Service
-//public class ProductUpdateConsumer {
+//public class NotificationConsumer {
 //
-//    private static final Logger LOGGER = LoggerFactory.getLogger(ProductUpdateConsumer.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationConsumer.class);
 //
-//    @RabbitListener(queues = "inventory-queue")
-//    public void receiveProductUpdate(String message) {
+//    @RabbitListener
+//    public void handleNotification(String message) {
 //        LOGGER.info("Получено обновление товара: {}", message);
 //        System.out.println("Получено обновление товара: {} " + message);
 //    }
